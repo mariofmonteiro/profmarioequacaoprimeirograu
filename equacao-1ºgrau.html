@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Interativo - Equações do 1º Grau</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .quiz-container {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+            padding: 30px;
+        }
+        h1 {
+            color: #2b6cb0;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .question {
+            margin-bottom: 20px;
+        }
+        .question p {
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .option {
+            padding: 10px;
+            border: 2px solid #2b6cb0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        .option:hover {
+            background-color: #e6f0fa;
+        }
+        .option input {
+            display: none;
+        }
+        .option.selected {
+            background-color: #2b6cb0;
+            color: white;
+        }
+        button {
+            background-color: #2b6cb0;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #1a4971;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+            text-align: center;
+        }
+        .correct {
+            color: #28a745;
+        }
+        .incorrect {
+            color: #dc3545;
+        }
+        #reset-progress {
+            background-color: #dc3545;
+            margin-left: 10px;
+        }
+        #reset-progress:hover {
+            background-color: #a71d2a;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <h1>Quiz Interativo - Equações do 1º Grau</h1>
+        <div id="quiz">
+            <!-- As questões serão inseridas dinamicamente pelo JavaScript -->
+        </div>
+        <div id="result"></div>
+        <button id="reset-progress" onclick="resetProgress()">Reiniciar Progresso</button>
+    </div>
+
+    <script>
+        const questions = [
+            { question: "x + 3 = 7", answer: 4, options: [2, 4, 6, 8] },
+            { question: "2x = 10", answer: 5, options: [3, 5, 7, 10] },
+            { question: "x - 4 = 2", answer: 6, options: [4, 6, 8, 10] },
+            { question: "3x + 1 = 10", answer: 3, options: [2, 3, 4, 5] },
+            { question: "5x = 25", answer: 5, options: [3, 4, 5, 6] },
+            { question: "x + 8 = 12", answer: 4, options: [2, 4, 6, 8] },
+            { question: "4x - 2 = 10", answer: 3, options: [2, 3, 4, 5] },
+            { question: "x - 7 = -3", answer: 4, options: [2, 4, 6, 8] },
+            { question: "2x + 5 = 11", answer: 3, options: [1, 2, 3, 4] },
+            { question: "x / 2 = 4", answer: 8, options: [4, 6, 8, 10] },
+            { question: "3x - 6 = 0", answer: 2, options: [1, 2, 3, 4] },
+            { question: "x + 9 = 15", answer: 6, options: [4, 6, 8, 10] },
+            { question: "5x + 3 = 18", answer: 3, options: [2, 3, 4, 5] },
+            { question: "x - 5 = -2", answer: 3, options: [1, 3, 5, 7] },
+            { question: "2x + 4 = 12", answer: 4, options: [2, 4, 6, 8] },
+            { question: "x / 3 = 5", answer: 15, options: [10, 12, 15, 18] },
+            { question: "4x - 8 = 0", answer: 2, options: [1, 2, 3, 4] },
+            { question: "x + 6 = 14", answer: 8, options: [6, 8, 10, 12] },
+            { question: "3x + 2 = 17", answer: 5, options: [3, 4, 5, 6] },
+            { question: "x - 9 = -4", answer: 5, options: [3, 5, 7, 9] },
+            { question: "2x + 7 = 15", answer: 4, options: [2, 4, 6, 8] },
+            { question: "x / 4 = 3", answer: 12, options: [8, 10, 12, 14] },
+            { question: "5x - 10 = 0", answer: 2, options: [1, 2, 3, 4] },
+            { question: "x + 10 = 20", answer: 10, options: [8, 10, 12, 14] },
+            { question: "4x + 5 = 21", answer: 4, options: [3, 4, 5, 6] },
+            { question: "x - 3 = 7", answer: 10, options: [7, 8, 10, 12] },
+            { question: "3x + 6 = 15", answer: 3, options: [2, 3, 4, 5] },
+            { question: "x / 5 = 2", answer: 10, options: [5, 8, 10, 12] },
+            { question: "2x - 4 = 8", answer: 6, options: [4, 6, 8, 10] },
+            { question: "x + 12 = 18", answer: 6, options: [4, 6, 8, 10] },
+            { question: "5x + 1 = 16", answer: 3, options: [2, 3, 4, 5] },
+            { question: "x - 8 = -5", answer: 3, options: [1, 3, 5, 7] },
+            { question: "3x + 4 = 19", answer: 5, options: [3, 4, 5, 6] },
+            { question: "x / 2 = 6", answer: 12, options: [8, 10, 12, 14] },
+            { question: "4x - 12 = 0", answer: 3, options: [2, 3, 4, 5] },
+            { question: "2x + 3 = 13", answer: 5, options: [3, 4, 5, 6] },
+            { question: "x + 7 = 16", answer: 9, options: [7, 8, 9, 10] },
+            { question: "5x - 5 = 15", answer: 4, options: [2, 3, 4, 5] },
+            { question: "x - 10 = -2", answer: 8, options: [6, 8, 10, 12] },
+            { question: "3x + 8 = 20", answer: 4, options: [2, 4, 6, 8] },
+            { question: "x / 3 = 4", answer: 12, options: [9, 12, 15, 18] },
+            { question: "2x - 6 = 4", answer: 5, options: [3, 4, 5, 6] },
+            { question: "x + 5 = 20", answer: 15, options: [10, 12, 15, 18] },
+            { question: "4x + 2 = 18", answer: 4, options: [3, 4, 5, 6] },
+            { question: "x - 6 = 3", answer: 9, options: [7, 8, 9, 10] },
+            { question: "3x - 9 = 0", answer: 3, options: [2, 3, 4, 5] },
+            { question: "x / 4 = 5", answer: 20, options: [15, 18, 20, 22] },
+            { question: "2x + 8 = 16", answer: 4, options: [2, 4, 6, 8] },
+            { question: "5x + 4 = 24", answer: 4, options: [3, 4, 5, 6] },
+            { question: "x - 4 = 8", answer: 12, options: [8, 10, 12, 14] }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        // Carregar progresso do localStorage
+        function loadProgress() {
+            const savedProgress = localStorage.getItem('quizProgress');
+            if (savedProgress) {
+                const progress = JSON.parse(savedProgress);
+                currentQuestionIndex = progress.currentQuestionIndex || 0;
+                score = progress.score || 0;
+            }
+        }
+
+        // Salvar progresso no localStorage
+        function saveProgress() {
+            const progress = {
+                currentQuestionIndex: currentQuestionIndex,
+                score: score
+            };
+            localStorage.setItem('quizProgress', JSON.stringify(progress));
+        }
+
+        // Reiniciar progresso
+        function resetProgress() {
+            localStorage.removeItem('quizProgress');
+            currentQuestionIndex = 0;
+            score = 0;
+            loadQuestion();
+            document.getElementById('result').innerHTML = '';
+        }
+
+        function loadQuestion() {
+            const quizContainer = document.getElementById('quiz');
+            const currentQuestion = questions[currentQuestionIndex];
+            quizContainer.innerHTML = `
+                <div class="question">
+                    <p>${currentQuestionIndex + 1}. Resolva: ${currentQuestion.question}</p>
+                    <div class="options">
+                        ${currentQuestion.options.map((option, index) => `
+                            <label class="option">
+                                <input type="radio" name="answer" value="${option}">
+                                ${option}
+                            </label>
+                        `).join('')}
+                    </div>
+                    <button onclick="checkAnswer()">Enviar</button>
+                </div>
+            `;
+
+            document.querySelectorAll('.option').forEach(option => {
+                option.addEventListener('click', () => {
+                    document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+                    option.classList.add('selected');
+                    option.querySelector('input').checked = true;
+                });
+            });
+        }
+
+        function checkAnswer() {
+            const selectedOption = document.querySelector('input[name="answer"]:checked');
+            const resultDiv = document.getElementById('result');
+
+            if (!selectedOption) {
+                resultDiv.innerHTML = '<span class="incorrect">Por favor, selecione uma opção!</span>';
+                return;
+            }
+
+            const userAnswer = parseFloat(selectedOption.value);
+            const correctAnswer = questions[currentQuestionIndex].answer;
+
+            if (userAnswer === correctAnswer) {
+                resultDiv.innerHTML = '<span class="correct">Correto!</span>';
+                score++;
+            } else {
+                resultDiv.innerHTML = `<span class="incorrect">Incorreto! A resposta correta é x = ${correctAnswer}</span>`;
+            }
+
+            saveProgress();
+
+            setTimeout(() => {
+                currentQuestionIndex++;
+                if (currentQuestionIndex < questions.length) {
+                    loadQuestion();
+                    resultDiv.innerHTML = '';
+                } else {
+                    quizContainer.innerHTML = '';
+                    resultDiv.innerHTML = `Quiz finalizado! Sua pontuação: ${score} de ${questions.length}`;
+                    localStorage.removeItem('quizProgress'); // Limpar progresso ao completar
+                }
+            }, 1500);
+        }
+
+        // Carregar progresso ao iniciar
+        loadProgress();
+        loadQuestion();
+    </script>
+</body>
+</html>
